@@ -1,0 +1,143 @@
+import java.util.Vector;
+
+public interface Hash<E> {
+    int length();
+    int size();
+    boolean isEmpty();
+    boolean add(E value);
+    boolean contains(E value);
+    boolean remove(E value);
+    String toString();
+}
+
+class HashNode<E> {
+    private E value;
+    private HashNode<E> next;
+
+    public HashNode(E value, HashNode<E> next) {
+        this.value = value;
+        this.next = next;
+    }
+
+    public E getValue() {
+        return value;
+    }
+
+    public HashNode<E> getNext() {
+        return next;
+    }
+
+    public void setNext(HashNode<E> next) {
+        this.next = next;
+    }
+}
+
+public class ChainingHash<E> implements Hash<E> {
+    private Vector<HashNode<E>> hashTable;
+
+    public ChainingHash(int capacity) {
+        hashTable = new Vector<>(capacity);
+        for (int i = 0; i < capacity; i++) {
+            hashTable.add(null);
+        }
+    }
+
+    @Override
+    public int length() {
+        return hashTable.size();
+    }
+
+    @Override
+    public int size() {
+        int count = 0;
+        for (HashNode<E> node : hashTable) {
+            while (node != null) {
+                count++;
+                node = node.getNext();
+            }
+        }
+        return count;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    @Override
+    public boolean add(E value) {
+        int index = hash(value);
+        HashNode<E> head = hashTable.get(index);
+        HashNode<E> newNode = new HashNode<>(value, null);
+
+        if (head == null) {
+            hashTable.set(index, newNode);
+            return true;
+        }
+
+        HashNode<E> prev = null;
+        while (head != null) {
+            if (head.getValue().equals(value)) {
+                return false; // Duplicate found, do not add
+            }
+            prev = head;
+            head = head.getNext();
+        }
+        prev.setNext(newNode);
+        return true;
+    }
+
+    @Override
+    public boolean contains(E value) {
+        int index = hash(value);
+        HashNode<E> head = hashTable.get(index);
+
+        while (head != null) {
+            if (head.getValue().equals(value)) {
+                return true;
+            }
+            head = head.getNext();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean remove(E value) {
+        int index = hash(value);
+        HashNode<E> head = hashTable.get(index);
+        HashNode<E> prev = null;
+
+        while (head != null) {
+            if (head.getValue().equals(value)) {
+                if (prev == null) {
+                    hashTable.set(index, head.getNext());
+                } else {
+                    prev.setNext(head.getNext());
+                }
+                return true;
+            }
+            prev = head;
+            head = head.getNext();
+        }
+        return false; // Element not found
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < hashTable.size(); i++) {
+            sb.append("[").append(i).append("]: ");
+            HashNode<E> node = hashTable.get(i);
+            while (node != null) {
+                sb.append(node.getValue()).append(" ");
+                node = node.getNext();
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    private int hash(E value) {
+        return Math.abs(value.hashCode() % hashTable.size());
+    }
+}
