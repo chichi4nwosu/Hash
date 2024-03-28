@@ -3,6 +3,7 @@ import java.util.Vector;
 
 public class ProbeHash<E> implements Hash<E> {
     private Vector<E> hashTable;
+    private Vector<Integer> statusTable; // Status table indicating whether each slot is removed, empty, or has an element
     private int capacity;
     private int size;
     private final double LOAD_FACTOR_THRESHOLD = 0.75;
@@ -12,8 +13,10 @@ public class ProbeHash<E> implements Hash<E> {
         this.capacity = 10;
         this.size = 0;
         this.hashTable = new Vector<>(capacity);
+        this.statusTable = new Vector<>(capacity);
         for (int i = 0; i < capacity; i++) {
             hashTable.add(null);
+            statusTable.add(0); // Initialize status table with 0 (empty)
         }
     }
 
@@ -28,8 +31,10 @@ public class ProbeHash<E> implements Hash<E> {
         this.capacity = initialCapacity;
         this.size = 0;
         this.hashTable = new Vector<>(capacity);
+        this.statusTable = new Vector<>(capacity);
         for (int i = 0; i < capacity; i++) {
             hashTable.add(null);
+            statusTable.add(0); // Initialize status table with 0 (empty)
         }
     }
 
@@ -42,19 +47,23 @@ public class ProbeHash<E> implements Hash<E> {
     private void rehash() {
         int newCapacity = capacity * 2;
         Vector<E> newHashTable = new Vector<>(newCapacity);
+        Vector<Integer> newStatusTable = new Vector<>(newCapacity);
         for (int i = 0; i < newCapacity; i++) {
             newHashTable.add(null);
+            newStatusTable.add(0); // Initialize status table with 0 (empty)
         }
-        for (E element : hashTable) {
-            if (element != null) {
-                int newIndex = Math.abs(element.hashCode() % newCapacity);
+        for (int i = 0; i < capacity; i++) {
+            if (hashTable.get(i) != null) {
+                int newIndex = Math.abs(hashTable.get(i).hashCode() % newCapacity);
                 while (newHashTable.get(newIndex) != null) {
                     newIndex = (newIndex + 1) % newCapacity; // Linear probing
                 }
-                newHashTable.set(newIndex, element);
+                newHashTable.set(newIndex, hashTable.get(i));
+                newStatusTable.set(newIndex, 1); // Set status to 1 (has an element)
             }
         }
         hashTable = newHashTable;
+        statusTable = newStatusTable;
         capacity = newCapacity;
     }
 
@@ -87,6 +96,7 @@ public class ProbeHash<E> implements Hash<E> {
             index = (index + 1) % capacity; // Linear probing
         }
         hashTable.set(index, value);
+        statusTable.set(index, 1); // Set status to 1 (has an element)
         size++;
         return true;
     }
@@ -111,6 +121,7 @@ public class ProbeHash<E> implements Hash<E> {
         do {
             if (hashTable.get(index) != null && hashTable.get(index).equals(value)) {
                 hashTable.set(index, null);
+                statusTable.set(index, -1); // Set status to -1 (removed)
                 size--;
                 return true;
             }
