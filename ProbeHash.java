@@ -116,69 +116,85 @@ public class ProbeHash<E> implements Hash<E> {
     }
 
     // Implemented methods from Hash interface
-     
+     // return full length of hash table
     public int length() {
         return capacity;
     }
 
-     
+     // return instance var size
     public int size() {
         return size;
     }
 
-     
+     // check if its emptuy
     public boolean isEmpty() {
         return size == 0;
     }
 
-     
+// adding the given value to the hashTable     
     public boolean add(E value) {
         if (contains(value)) {
+            // is it alr in the table return false
             return false;
         }
         if ((double) size / capacity >= LOAD_FACTOR_THRESHOLD) {
-            rehash();
+            rehash();// is it is past the lf of .75 rehash
         }
+        // otherwise find the index for the value
         int index = hashFunction(value);
+        // while the value at given is not null
         while (hashTable.get(index) != null) {
             index = (index + 1) % capacity; // Linear probing
-        }
+        }// once it is empty set the index to have the desired value u want to add
         hashTable.set(index, value);
         statusTable.set(index, 1); // Set status to 1 (has an element)
+        // increase size
         size++;
         return true;
     }
 
-     
+    // Checks if the hash table contains the value
     public boolean contains(E value) {
+        // find the index 
         int index = hashFunction(value);
+        // initial or startingn index isn recorded by var
         int startIndex = index;
         do {
+            // if the index is null and it is the value were looking for
             if (hashTable.get(index) != null && hashTable.get(index).equals(value)) {
                 return true;
+                // return ture
             }
             index = (index + 1) % capacity; // Linear probing
         } while (index != startIndex);
+        // other wise return false
         return false;
     }
 
-     
+     // removwes desired val
     public boolean remove(E value) {
+        // intial index found Using hash function
         int index = hashFunction(value);
+        // Keep track of the intial index
         int startIndex = index;
         do {
+            // if both the vale at index is null and it equals the desired removing value ...
             if (hashTable.get(index) != null && hashTable.get(index).equals(value)) {
+                // set that index to null
                 hashTable.set(index, null);
                 statusTable.set(index, -1); // Set status to -1 (removed)
+                // update size of elements
                 size--;
+                // succcessful remove
                 return true;
             }
             index = (index + 1) % capacity; // Linear probing
         } while (index != startIndex);
+        // otherwise return falswe
         return false;
     }
 
-    
+    // string builder
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < capacity; i++) {
