@@ -1,6 +1,54 @@
 import java.util.Collection;
 import java.util.Vector;
 
+/*
+ * Constructor Summary
+ProbeHash()
+Constructs a new, empty hash table, named hashTable, with an initial capacity of 10.
+ProbeHash(Collection<E> list)
+Constructs a new hash table, named containing the elements in the specified collection.
+ProbeHash(int initialCapacity)
+Constructs a new, empty set using the specified initial capacity.
+Method Summary
+void rehash()
+
+Doubles the size of the hash table. This should be used in your add method
+once your load factor is at or above .75
+
+Hashing
+
+Version 7 2
+
+int hashFunction(E value)
+
+Returns the index that the corresponding value should go to in the current
+hash table.
+boolean add(E value)
+
+Adds the specified element to this hash set and returns true. If the value
+already exists in the hash set then it is NOT added and false is returned.
+
+boolean contains(E value)
+Returns true if this hash set contains the specified value; false otherwise.
+int length()
+Returns the length of the Hash Table. In other words, total number of slots.
+
+boolean isEmpty()
+Return true if this hash set is empty, false otherwise.
+boolean remove(E value)
+
+Removes the specified value from this hash set. Returns true if successful and
+false otherwise.
+
+int size()
+Returns the number of elements in this hash set.
+String toString()
+Returns a String representation of all the elements in this hash set.
+ */
+
+import java.util.Collection;
+import java.util.Vector;
+
 public class ProbeHash<E> implements Hash<E> {
     private Vector<E> hashTable;
     private Vector<Integer> statusTable; // Status table indicating whether each slot is removed, empty, or has an element
@@ -68,22 +116,22 @@ public class ProbeHash<E> implements Hash<E> {
     }
 
     // Implemented methods from Hash interface
-    @Override
+     
     public int length() {
         return capacity;
     }
 
-    @Override
+     
     public int size() {
         return size;
     }
 
-    @Override
+     
     public boolean isEmpty() {
         return size == 0;
     }
 
-    @Override
+     
     public boolean add(E value) {
         if (contains(value)) {
             return false;
@@ -101,7 +149,7 @@ public class ProbeHash<E> implements Hash<E> {
         return true;
     }
 
-    @Override
+     
     public boolean contains(E value) {
         int index = hashFunction(value);
         int startIndex = index;
@@ -114,7 +162,7 @@ public class ProbeHash<E> implements Hash<E> {
         return false;
     }
 
-    @Override
+     
     public boolean remove(E value) {
         int index = hashFunction(value);
         int startIndex = index;
@@ -130,7 +178,7 @@ public class ProbeHash<E> implements Hash<E> {
         return false;
     }
 
-    @Override
+    
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < capacity; i++) {
