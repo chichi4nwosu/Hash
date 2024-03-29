@@ -25,11 +25,13 @@ import java.util.Collection;
 
     
     public class ChainingHash<E> implements Hash<E> {
+//private instance vars
         private Vector<HashNode<E>> hashTable;
         private int capacity;
         private int size;
         private final double LF_THRESHOLD = 0.75;
 
+//Initializes a new `ChainingHash` instance with the specified capacity.
         public ChainingHash(int capacity) {
         	this.capacity = 0;
         	this.size = 0;
@@ -38,6 +40,7 @@ import java.util.Collection;
                 hashTable.add(null);
             }
         }
+// instance with a default capacity of 10.
         public ChainingHash() {
             this.capacity = 10;
             this.size = 0;
@@ -46,7 +49,7 @@ import java.util.Collection;
                 hashTable.add(null);
             }
         }
-        
+        // instance with the elements from the given collection.
         public ChainingHash(Collection<E> list) {
             this();
             for (E element : list) {
@@ -54,12 +57,12 @@ import java.util.Collection;
             }
         }
 
-         
+         // Returns the capacity of the hash table.
         public int length() {
             return capacity;
         }
 
-         
+         // Returns the number of elements currently stored in the hash table.
         public int size() {
             return size;
         }
@@ -69,12 +72,14 @@ import java.util.Collection;
             return size() == 0;
         }
         
-         
+         // adds val to hash
         public boolean add(E value) {
+// intended index
             int index = hashFunction(value);
+// value at the desired index
             HashNode<E> head = hashTable.get(index);
             HashNode<E> newNode = new HashNode<>(value, null);
-
+// nothing @ the value js set that index to the value and return T
             if (head == null) {
                 hashTable.set(index, newNode);
                 return true;
@@ -82,17 +87,21 @@ import java.util.Collection;
 
             HashNode<E> prev = null;
             while (head != null) {
+// contains value alr
                 if (head.getValue().equals(value)) {
                     return false; // Duplicate found, do not add
                 }
+// place holder
                 prev = head;
+// go to next node
                 head = head.getNext();
             }
+// set the next to the node 
             prev.setNext(newNode);
             size++;
             return true;
         }
-
+// Doubles the capacity of the hash table and rehashes all existing elements into the new table. 
     public void rehash() {
         int newCapacity = capacity * 2; // Double the capacity
         
@@ -114,48 +123,60 @@ import java.util.Collection;
         
         capacity = newCapacity; // Update capacity
     }
-        
+
+        // hash code of the given value and returns an index within the hash table's capacity.
         private int hashFunction(E value) {
             return Math.abs(value.hashCode() % capacity);
         }
-         
+         // Checks if the hash table contains the val
         public boolean contains(E value) {
+// find index
             int index = hashFunction(value);
             HashNode<E> head = hashTable.get(index);
-
+// repeat until val at index is null
             while (head != null) {
+// checking if they march
                 if (head.getValue().equals(value)) {
                     return true;
                 }
                 head = head.getNext();
             }
+// otherwise return false
             return false;
         }
 
          
         public boolean remove(E value) {
+// index for the hash function
             int index = hashFunction(value);
             HashNode<E> head = hashTable.get(index);
             HashNode<E> prev = null;
-
+// repeat until val at index is null
             while (head != null) {
+// is it is the value we are wanting to remove
                 if (head.getValue().equals(value)) {
+// prev is nyll
                     if (prev == null) {
+// set the index to the nest of head
                         hashTable.set(index, head.getNext());
                     } else {
+// otherwise set prevs next to the nexr of head
                         prev.setNext(head.getNext());
                     }
                     size--;
                     return true;
                 }
+// prev is now head 
                 prev = head;
+// next value
                 head = head.getNext();
             }
             return false; // Element not found
         }
 
-         
+         // making it a string to display all info
         public String toString() {
+// string builder
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < hashTable.size(); i++) {
                 sb.append("[").append(i).append("]: ");
